@@ -1,0 +1,36 @@
+name: update_map
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+jobs:
+  scrape_bbc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out this repo
+        uses: actions/checkout@v2
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14.x'
+      - name: Install all necessary packages
+        run: npm install -g mapshaper
+      - name: Run the scraping script
+        run: |-
+        wget -N  https://raw.githubusercontent.com/nytimes/covid-19-data/master/rolling-averages/us-counties-recent.csv
+        mapshaper cb_2020_us_county_500k.shp \
+          -each 'JOIN_FIPS="USA-" + GEOID' \
+          -join us-counties-recent.csv keys=JOIN_FIPS,geoid \
+          -classify field=cases_avg_per_100k save-as=fill color-scheme=Magma invert \
+            breaks=10,30,50,70,100,250 \
+          -proj albersusa \
+          -simplify 2% \
+          -o covid.svg
+      - name: Commit and push if content changed
+        run: |-
+          git config user.name "Automated"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          timestamp=$(date -u)
+          git commit -m "Latest data: ${timestamp}" || exit 0
+          git push
