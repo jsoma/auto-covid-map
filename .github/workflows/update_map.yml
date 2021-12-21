@@ -15,7 +15,7 @@ jobs:
           node-version: '14.x'
       - name: Install all necessary packages
         run: npm install -g mapshaper
-      - name: Run the scraping script
+      - name: Building the map
         run: |-
           wget -N  "https://raw.githubusercontent.com/nytimes/covid-19-data/master/rolling-averages/us-counties-recent.csv"
           mapshaper cb_2020_us_county_500k.shp \
