@@ -21,7 +21,7 @@ jobs:
           mapshaper cb_2020_us_county_500k.shp \
             -each 'JOIN_FIPS="USA-" + GEOID' \
             -join us-counties-recent.csv keys=JOIN_FIPS,geoid \
-            -classify field=cases_avg_per_100k save-as=fill color-scheme=Magma invert \
+            -classify field=cases_avg_per_100k save-as=fill colors=Magma invert \
               breaks=10,30,50,70,100,250 \
             -proj albersusa \
             -simplify 2% \
